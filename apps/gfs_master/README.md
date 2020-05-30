@@ -1,21 +1,20 @@
-# GFS
+# GFSMaster
 
 **TODO: Add description**
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `gfs` to your list of dependencies in `mix.exs`:
+by adding `gfs_master_server` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:gfs, "~> 0.1.0"}
+    {:gfs_master_server, "~> 0.1.0"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/gfs](https://hexdocs.pm/gfs).
-
+be found at [https://hexdocs.pm/gfs_master_server](https://hexdocs.pm/gfs_master_server).
