@@ -22,7 +22,7 @@ defmodule GFSMaster.Application do
   def install_db() do
     Amnesia.Schema.create()
     Amnesia.start()
-    GFSMaster.FileNamespace.create()
-    GFSMaster.FileNamespace.wait()
+    GFSMaster.Database.create()
+    GFSMaster.Database.wait()
   end
 end
