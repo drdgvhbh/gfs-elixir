@@ -37,51 +37,19 @@ defmodule GFSMaster.Router do
       x.body_params
       |> GFSMaster.DTO.CreateFile.validate() >>>
         fn dto -> GFSMaster.Database.FileMetadata.create_file(dto.file_name, dto.is_dir) end
-      |> (fn result ->
-            case result do
-              %Either.Right{} ->
-                {201}
-
-              %Either.Left{left: {:error_validation, errors}} ->
-                {400,
-                 %{"error" => %{"message" => "schema validation error", errors: errors}}
-                 |> Jason.encode!()}
-
-              %Either.Left{left: {:file_already_exists, file_path}} ->
-                {400,
-                 %{"error" => %{"message" => "file already exists", "file_path" => file_path}}
-                 |> Jason.encode!()}
-
-              %Either.Left{left: {:parents_are_not_directories, invalid_directories}} ->
-                {400,
-                 %{
-                   "error" => %{
-                     "message" => "the parents of this file must all be directories",
-                     "invalid_directories" => invalid_directories
-                   }
-                 }
-                 |> Jason.encode!()}
-
-              %Either.Left{left: {:missing_parents_dirs, missing_directories}} ->
-                {400,
-                 %{
-                   "error" => %{
-                     "message" => "file is missing parent directories",
-                     "missing_directories" => missing_directories
-                   }
-                 }
-                 |> Jason.encode!()}
-
-              _ ->
-                {:error, result.left}
-            end
-          end).()
+      |> GFSMaster.ResultHandlers.pipe([
+        GFSMaster.ResultHandlers.handle_success(201),
+        GFSMaster.ResultHandlers.handle_validation_error(),
+        GFSMaster.ResultHandlers.handle_file_already_exists_error(),
+        GFSMaster.ResultHandlers.handle_parents_are_not_directories(),
+        GFSMaster.ResultHandlers.handle_missing_directories()
+      ]).()
     end
 
     (put_resp_content_type &&& pipeline).(conn)
     |> (fn {conn, result} ->
           case result do
-            {:error, err} ->
+            %Either.Left{left: err} ->
               IO.inspect(err)
               send_resp(conn, 500, GFSMaster.DTO.InternalServerError.new() |> Jason.encode!())
 
