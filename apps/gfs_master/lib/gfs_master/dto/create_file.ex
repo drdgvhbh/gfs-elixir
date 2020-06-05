@@ -8,14 +8,16 @@ defmodule GFSMaster.DTO.CreateFile.JSONValidationSchema do
   @file_name "file_name"
   @is_dir "is_dir"
 
-  defstruct type: "object",
-            required: [@file_name, @is_dir],
-            properties: %{
-              @file_name => %{
-                "type" => "string"
-              },
-              @is_dir => %{
-                "type" => "boolean"
+  defstruct schema: %{
+              "type" => "object",
+              "required" => [@file_name, @is_dir],
+              "properties" => %{
+                @file_name => %{
+                  "type" => "string"
+                },
+                @is_dir => %{
+                  "type" => "boolean"
+                }
               }
             }
 
@@ -39,8 +41,7 @@ defmodule GFSMaster.DTO.CreateFile do
           optional(:right) => GFSMaster.DTO.CreateFile
         }
   def validate(body) do
-    %GFSMaster.DTO.CreateFile.JSONValidationSchema{}
-    |> Map.from_struct()
+    GFSMaster.DTO.CreateFile.JSONValidationSchema.new().schema
     |> ExJsonSchema.Schema.resolve()
     |> ExJsonSchema.Validator.validate(body, error_formatter: false)
     |> (fn result ->
