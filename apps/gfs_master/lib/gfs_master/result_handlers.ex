@@ -1,5 +1,6 @@
 defmodule GFSMaster.ResultHandlers do
   alias Algae.Either
+  alias GFSMaster.DTO
 
   @spec pipe(list()) :: any
   def pipe(handlers) do
@@ -29,9 +30,7 @@ defmodule GFSMaster.ResultHandlers do
     fn result ->
       case result do
         %Either.Left{left: {:error_validation, errors}} ->
-          {400,
-           %{"error" => %{"message" => "schema validation error", errors: errors}}
-           |> Jason.encode!()}
+          {400, DTO.ValidationError.new(errors)}
 
         _ ->
           result
@@ -44,9 +43,7 @@ defmodule GFSMaster.ResultHandlers do
     fn result ->
       case result do
         %Either.Left{left: {:file_already_exists, file_path}} ->
-          {400,
-           %{"error" => %{"message" => "file already exists", "file_path" => file_path}}
-           |> Jason.encode!()}
+          {400, DTO.FileAlreadyExistError.new(file_path)}
 
         _ ->
           result
@@ -59,14 +56,7 @@ defmodule GFSMaster.ResultHandlers do
     fn result ->
       case result do
         %Either.Left{left: {:parents_are_not_directories, invalid_directories}} ->
-          {400,
-           %{
-             "error" => %{
-               "message" => "the parents of this file must all be directories",
-               "invalid_directories" => invalid_directories
-             }
-           }
-           |> Jason.encode!()}
+          {400, DTO.ParentsAreNotDirectoriesError.new(invalid_directories)}
 
         _ ->
           result
@@ -85,8 +75,7 @@ defmodule GFSMaster.ResultHandlers do
                "message" => "file is missing parent directories",
                "missing_directories" => missing_directories
              }
-           }
-           |> Jason.encode!()}
+           }}
 
         _ ->
           result

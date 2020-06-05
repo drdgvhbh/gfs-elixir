@@ -1,6 +1,29 @@
-require Protocol
-
 alias Algae.Either
+
+defmodule GFSMaster.DTO.CreateFile.JSONValidationSchema do
+  require Protocol
+
+  @type t :: %__MODULE__{}
+
+  @file_name "file_name"
+  @is_dir "is_dir"
+
+  defstruct type: "object",
+            required: [@file_name, @is_dir],
+            properties: %{
+              @file_name => %{
+                "type" => "string"
+              },
+              @is_dir => %{
+                "type" => "boolean"
+              }
+            }
+
+  @spec new :: GFSMaster.DTO.CreateFile.JSONValidationSchema.t()
+  def new do
+    %GFSMaster.DTO.CreateFile.JSONValidationSchema{}
+  end
+end
 
 defmodule GFSMaster.DTO.CreateFile do
   @type t :: %__MODULE__{}
@@ -11,23 +34,13 @@ defmodule GFSMaster.DTO.CreateFile do
   defstruct file_name: "", is_dir: ""
 
   @spec validate(any) :: %{
-          :__struct__ => Algae.Either.Left | Algae.Either.Right,
+          :__struct__ => Either.Left | Either.Right,
           optional(:left) => ExJsonSchema.Validator.Error,
           optional(:right) => GFSMaster.DTO.CreateFile
         }
   def validate(body) do
-    %{
-      "type" => "object",
-      "required" => [@file_name, @is_dir],
-      "properties" => %{
-        @file_name => %{
-          "type" => "string"
-        },
-        @is_dir => %{
-          "type" => "boolean"
-        }
-      }
-    }
+    %GFSMaster.DTO.CreateFile.JSONValidationSchema{}
+    |> Map.from_struct()
     |> ExJsonSchema.Schema.resolve()
     |> ExJsonSchema.Validator.validate(body, error_formatter: false)
     |> (fn result ->
@@ -43,22 +56,5 @@ defmodule GFSMaster.DTO.CreateFile do
               {:error_validation, reason} |> Either.Left.new()
           end
         end).()
-  end
-end
-
-defmodule GFSMaster.DTO.InternalServerError do
-  @type t :: %__MODULE__{}
-
-  @derive Jason.Encoder
-  defstruct message: "Internal Server Error"
-
-  @spec new :: GFSMaster.DTO.InternalServerErrorDTO.t()
-  def new() do
-    %GFSMaster.DTO.InternalServerError{}
-  end
-
-  @spec new(String.t()) :: GFSMaster.InternalServerErrorDTO.t()
-  def new(message) do
-    %GFSMaster.DTO.InternalServerError{message: message}
   end
 end
