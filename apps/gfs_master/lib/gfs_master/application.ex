@@ -6,10 +6,21 @@ defmodule GFSMaster.Application do
 
   use Application
 
+  alias Vapor.Provider.{Env, Dotenv}
+
   def start(_type, _args) do
+    providers = [
+      %Dotenv{},
+      %Env{bindings: [{:port, "PORT", map: &String.to_integer/1}]}
+    ]
+
+    config = Vapor.load!(providers)
+
     children = [
-      {Plug.Cowboy,
-       scheme: :http, plug: {GFSMaster.Router, [hello: "world"]}, options: [port: 3001]},
+      {
+        Plug.Cowboy,
+        scheme: :http, plug: {GFSMaster.Router, []}, options: [port: config.port]
+      },
       {GFSMaster.ETS.Supervisor, name: GFSMaster.ETS.Supervisor}
     ]
 

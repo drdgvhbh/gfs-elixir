@@ -2,14 +2,9 @@ defmodule GFSMaster.Registry do
   use GenServer
 
   @impl true
+  @spec init(any) :: {:ok, {}}
   def init(_) do
-    file_namespace =
-      :ets.new(
-        :file_namespace,
-        [:named_table, :public, read_concurrency: true, write_concurrency: true]
-      )
-
-    {:ok, {file_namespace}}
+    {:ok, {}}
   end
 
   def start_link(opts) do
