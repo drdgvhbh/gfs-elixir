@@ -69,13 +69,7 @@ defmodule GFSMaster.ResultHandlers do
     fn result ->
       case result do
         %Either.Left{left: {:missing_parents_dirs, missing_directories}} ->
-          {400,
-           %{
-             "error" => %{
-               "message" => "file is missing parent directories",
-               "missing_directories" => missing_directories
-             }
-           }}
+          {400, GFSMaster.DTO.MissingDirectoriesError.new(missing_directories)}
 
         _ ->
           result
