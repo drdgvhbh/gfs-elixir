@@ -1,0 +1,2 @@
+defmodule GFSMaster do
+end

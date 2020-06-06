@@ -20,5 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-gfs_server-*.tar
+gfs_master_server-*.tar
 
+
+.env
