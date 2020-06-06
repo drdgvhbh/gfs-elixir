@@ -14,11 +14,9 @@ defmodule GFSMaster.Namespace.Path do
     path
     |> Path.split()
     |> (fn paths ->
-          if length(paths) <= 1 do
-            []
-          else
-            Enum.map(0..(length(paths) - 2), &Enum.slice(paths, 0..&1))
-          end
+          if length(paths) <= 1,
+            do: [],
+            else: Enum.map(0..(length(paths) - 2), &Enum.slice(paths, 0..&1))
         end).()
     |> Enum.map(fn segment -> Enum.join(segment, "/") end)
   end

@@ -33,7 +33,7 @@ defmodule GFSMaster.DTO.CreateFile do
   @file_name "file_name"
   @is_dir "is_dir"
 
-  defstruct file_name: "", is_dir: ""
+  defstruct [:file_name, :is_dir]
 
   @spec validate(any) :: %{
           :__struct__ => Either.Left | Either.Right,
