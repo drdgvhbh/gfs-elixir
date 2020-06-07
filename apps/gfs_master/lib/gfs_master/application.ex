@@ -15,14 +15,13 @@ defmodule GFSMaster.Application do
     ]
 
     config = Vapor.load!(providers)
-    chunks_table = :chunks
 
     children = [
       {
         Plug.Cowboy,
         scheme: :http, plug: {GFSMaster.Router, []}, options: [port: config.port]
       },
-      {GFSMaster.ChunkRegistry, name: GFSMaster.ChunkRegistry, chunks_table: chunks_table}
+      {GFSMaster.ChunkRegistry, name: GFSMaster.ChunkRegistry}
     ]
 
     install_db()

@@ -88,4 +88,31 @@ defdatabase GFSMaster.Database do
           end).()
     end
   end
+
+  deftable WorkerNode, [:host_name, :timestamp], type: :set do
+    @type t :: %WorkerNode{host_name: String.t(), timestamp: String.t()}
+
+    @spec connect_worker(String.t()) :: :ok | :error
+    def connect_worker(host_name) do
+      Amnesia.transaction do
+        if WorkerNode.read(host_name, :read) == nil do
+          WorkerNode.write(%WorkerNode{
+            host_name: host_name,
+            timestamp: Time.utc_now() |> Time.to_string()
+          })
+
+          :ok
+        else
+          :error
+        end
+      end
+    end
+
+    @spec disconnect_worker(String.t()) :: :ok | :error
+    def disconnect_worker(host_name) do
+      Amnesia.transaction do
+        WorkerNode.delete(host_name)
+      end
+    end
+  end
 end
