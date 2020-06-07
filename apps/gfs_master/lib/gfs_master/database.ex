@@ -90,9 +90,9 @@ defdatabase GFSMaster.Database do
   end
 
   deftable WorkerNode, [:host_name, :timestamp], type: :set do
-    @type t :: %WorkerNode{host_name: String.t(), timestamp: String.t()}
+    @type t :: %WorkerNode{host_name: Atom.t(), timestamp: String.t()}
 
-    @spec connect_worker(String.t()) :: :ok | :error
+    @spec connect_worker(Atom.t()) :: :ok | :error
     def connect_worker(host_name) do
       Amnesia.transaction do
         if WorkerNode.read(host_name, :read) == nil do
@@ -108,7 +108,7 @@ defdatabase GFSMaster.Database do
       end
     end
 
-    @spec disconnect_worker(String.t()) :: :ok | :error
+    @spec disconnect_worker(Atom.t()) :: :ok | :error
     def disconnect_worker(host_name) do
       Amnesia.transaction do
         WorkerNode.delete(host_name)
