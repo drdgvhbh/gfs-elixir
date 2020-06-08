@@ -24,3 +24,4 @@ gfs_master_server-*.tar
 
 
 .env.local
+Mnesia.*

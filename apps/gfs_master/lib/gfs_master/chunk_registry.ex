@@ -8,7 +8,7 @@ defmodule GFSMaster.ChunkRegistry do
     psq_key_counter = 0
     racks = %{}
 
-    {:ok, {racks, hostname_to_racks, hostname_to_psq_key, psq_key_counter}}
+    {:ok, {racks, hostname_to_racks, hostname_to_psq_key, psq_key_counter}, 0}
   end
 
   def start_link(opts) do
@@ -94,6 +94,18 @@ defmodule GFSMaster.ChunkRegistry do
     |> GFSMaster.Database.WorkerNode.disconnect_worker()
 
     {:noreply, next_state}
+  end
+
+  @impl true
+  def handle_info(:timeout, state) do
+    GFSMaster.Database.WorkerNode.list_workers()
+    |> IO.inspect()
+    |> Enum.each(fn worker ->
+      worker |> IO.inspect()
+      Node.monitor(worker, true)
+    end)
+
+    {:noreply, state}
   end
 
   defp get_racks(state) do

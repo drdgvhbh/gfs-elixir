@@ -24,17 +24,16 @@ defmodule GFSMaster.Application do
       {GFSMaster.ChunkRegistry, name: GFSMaster.ChunkRegistry}
     ]
 
-    install_db()
+    :stopped = Amnesia.stop()
+    # :ok = Amnesia.Schema.create([Node.self(), :"retards@127.0.0.1"])
+    :ok = Amnesia.start()
+    GFSMaster.Database.create(disk: [Node.self()])
+    :ok = GFSMaster.Database.wait(15000)
+    # :ok = Amnesia.start()
+    # GFSMaster.Database.create()
+    # :ok = GFSMaster.Database.wait(15000)
 
     opts = [strategy: :one_for_one, name: GFSMaster.Supervisor]
     {:ok, _} = Supervisor.start_link(children, opts)
-  end
-
-  @spec install_db :: :ok | {:error, atom} | {:timeout, [atom]}
-  def install_db() do
-    Amnesia.Schema.create()
-    Amnesia.start()
-    GFSMaster.Database.create()
-    GFSMaster.Database.wait()
   end
 end

@@ -20,7 +20,7 @@ defmodule GFSChunk.Worker do
         {:connect, Node.self(), rack_id, kb_used}
       )
 
-    {:ok, opts}
+    {:ok, {master_hostname}}
   end
 
   def start_link(opts) do

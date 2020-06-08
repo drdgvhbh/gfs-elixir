@@ -114,5 +114,12 @@ defdatabase GFSMaster.Database do
         WorkerNode.delete(host_name)
       end
     end
+
+    @spec list_workers :: [String.t()]
+    def list_workers() do
+      Amnesia.transaction do
+        WorkerNode.keys()
+      end
+    end
   end
 end
